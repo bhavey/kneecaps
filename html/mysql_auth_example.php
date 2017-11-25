@@ -3,7 +3,7 @@
 $servername = "localhost";
 $username = "GIT_USERNAME";
 $password = "GIT_PASSWORD";
-$dbname = "knees";
+$dbname = "DATABASE_NAME";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
