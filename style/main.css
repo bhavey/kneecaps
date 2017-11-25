@@ -154,7 +154,7 @@
   	color: red;
   }
 
-  tr.payment > td {
+  tr > td {
   	padding: 1px 50px 1px 0px;
   }
 

@@ -69,6 +69,37 @@
 			I owe <span id="what-i-owe" class="charge">$</span>.
 			 <span id="total-prefix"><span id="total-amount">$</span></span>
 			<br><br>
+			<table class="transaction-table">
+				<tr>
+				<?php
+					$sql = "SELECT * FROM person";
+					$result = $conn->query($sql);
+					if ($result->num_rows > 0) {
+						if ($row["id"] != $current_id)
+						{
+							while($row = $result->fetch_assoc()) {
+								echo "<th>".$row["name"]."</th>";
+							}
+						}
+					}
+				?>
+				</tr>
+				<tr>
+				<?php
+					$sql = "SELECT * FROM person";
+					$result = $conn->query($sql);
+					if ($result->num_rows > 0) {
+						if ($row["id"] != $current_id)
+						{
+							while($row = $result->fetch_assoc()) {
+								echo "<td id=\"total-".$row["id"]."\">$0</td>";
+							}
+						}
+					}
+				?>
+				</tr>
+			</table>
+			<br>
 
 			<table class="transaction-table">
 				<tr>
@@ -81,7 +112,8 @@
 			<?php
 //				$conn = include 'mysql_auth.php';
 				$totalPositive = 0;
-				$toalNegative = 0;
+				$totalNegative = 0;
+				$totalUsers = array();
 				$sql = "SELECT * FROM transaction WHERE isActive=1 AND (toUser=\"" . $current_id . "\" OR fromUser=\"" . $current_id . "\")";
 				$result = $conn->query($sql);
 				if ($result->num_rows > 0) {
@@ -89,6 +121,8 @@
     				while($row = $result->fetch_assoc()) {
     					echo "<tr class=\"";
     					$is_payment = 0;
+
+
     					if ($row['toUser'] == $current_id)
     					{
     						$is_payment = 1;
@@ -96,6 +130,11 @@
 
     					if ($is_payment)
     					{
+	    					if (!$totalUsers[$row['fromUser']])
+	    					{
+	    						$totalUsers[$row['fromUser']]=0;
+	    					}
+	    					$totalUsers[$row['fromUser']]=$totalUsers[$row['fromUser']]+$row["amount"];
     						$totalPositive = $totalPositive + $row["amount"];
 							$sql = "SELECT * FROM person WHERE id=\"" . $row["fromUser"] . "\"";
 							$result2 = $conn->query($sql);
@@ -106,6 +145,11 @@
     					}
     					else
     					{
+	    					if (!$totalUsers[$row['toUser']])
+	    					{
+	    						$totalUsers[$row['toUser']]=0;
+	    					}
+	    					$totalUsers[$row['toUser']]=$totalUsers[$row['toUser']]-$row["amount"];
     						$totalNegative = $totalNegative + $row["amount"];
 							$sql = "SELECT * FROM person WHERE id=\"" . $row["toUser"] . "\"";
 							$result2 = $conn->query($sql);
@@ -155,8 +199,36 @@ $("[id*=trans-]").click(function() {
 var total_positive=<?php echo $totalPositive ?>;
 var total_negative=<?php echo $totalNegative ?>;
 
+console.log("This many... ");
+console.log(<?php echo $totalUsers[2]; ?>);
+
 $("[id='what-im-owed']").append(total_positive);
 $("[id='what-i-owe']").append(total_negative);
+
+<?php $jsonData = json_encode($totalUsers); ?>
+var json_data = <?php echo $jsonData; ?>;
+
+console.log(json_data);
+
+for (var key in json_data)
+{
+	var is_negative=false;
+	if (json_data[key] < 0)
+	{
+		is_negative = true;
+	}
+	var needed_id="[id='total-"+key+"']";
+	if (is_negative)
+	{
+		$(needed_id).addClass('charge');
+		$(needed_id).text("$"+(json_data[key]*-1));
+	}
+	else
+	{
+		$(needed_id).addClass('payment');
+		$(needed_id).text("$"+json_data[key]);
+	}
+}
 
 if (total_positive > total_negative)
 {
