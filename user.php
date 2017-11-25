@@ -23,7 +23,7 @@
 			</span>
 		</div>
 		<div class="content_section floating_element">
-			<form action="/transaction.php" onsubmit="return validateForm()" name="userform">
+			<form action="/transaction.php" name="userform">
 				I want to 
 				<select name="transaction" id="trans_type">
 					<option value="Pay">Pay</option>
@@ -65,9 +65,7 @@
 
 			</form>
 			<br>
-			I am owed <span id="what-im-owed" class="payment">$</span>,
-			I owe <span id="what-i-owe" class="charge">$</span>.
-			 <span id="total-prefix"><span id="total-amount">$</span></span>
+			<span id="total-prefix"><span id="total-amount">$</span></span>
 			<br><br>
 			<table class="transaction-table">
 				<tr>
@@ -110,11 +108,10 @@
 					<th>Description</th>
 				</tr>					
 			<?php
-//				$conn = include 'mysql_auth.php';
 				$totalPositive = 0;
 				$totalNegative = 0;
 				$totalUsers = array();
-				$sql = "SELECT * FROM transaction WHERE isActive=1 AND (toUser=\"" . $current_id . "\" OR fromUser=\"" . $current_id . "\")";
+				$sql = "SELECT * FROM transaction WHERE isActive=1 AND (toUser=\"" . $current_id . "\" OR fromUser=\"" . $current_id . "\") ORDER BY ID DESC";
 				$result = $conn->query($sql);
 				if ($result->num_rows > 0) {
 					// output data of each row
@@ -161,7 +158,7 @@
 						$other_name = $row2["name"];
     					echo "\">";
     					$phpdate = strtotime($row["timestamp"]);
-    					echo "<td id=\"trans-".$row["id"] ."\" style=\"color:red\"><a href=\"#\">" . x . "</a></td>";
+    					echo "<td id=\"trans-".$row["id"] ."\" style=\"color:black\"><a href=\"#\">" . x . "</a></td>";
     					echo "<td>" . date("m/d/y", $phpdate) . "</td>";
     					echo "<td>$" . number_format($row["amount"],2) . "</td>";
 
