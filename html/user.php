@@ -120,12 +120,25 @@
 				$totalPositive = 0;
 				$totalNegative = 0;
 				$totalUsers = array();
-				$sql = "SELECT * FROM transaction WHERE isActive=1 AND (toUser=\"" . $current_id . "\" OR fromUser=\"" . $current_id . "\") ORDER BY ID DESC";
+
+				$sql = "SELECT tran.*, tlist.toId, tlist.fromId, tlist.is_active FROM transaction tran INNER JOIN transaction_list tlist ON tlist.transId = tran.id INNER JOIN person p ON tlist.toId = p.id WHERE tran.is_active=1 AND tlist.is_active=1 AND (tlist.fromId=" . $current_id . " OR tlist.toId=" . $current_id . ")";
+
+			//	$sql = "SELECT * FROM transaction WHERE isActive=1 AND (toUser=\"" . $current_id . "\" OR fromUser=\"" . $current_id . "\") ORDER BY ID DESC";
 				$result = $conn->query($sql);
+
 				if ($result->num_rows > 0) {
 					// output data of each row
+					$row_iter = 0;
     				while($row = $result->fetch_assoc()) {
-    					$prev_row=$row;
+    					$rows[$row_iter] = $row;
+    					$row_iter = $row_iter + 1;
+    				}
+    				echo "boop";
+    				echo $rows;
+    				echo "boop";
+
+    				for ($i = 0; $i < count($rows); $i++) {
+    					$row = $rows[$i];
     					echo "<tr class=\"";
     					$is_payment = 0;
 
@@ -253,5 +266,9 @@ else
 	$("[id='total-amount']").addClass('charge');
 	$("[id='total-prefix']").append('.');
 }
+
+data_payload=<?php echo json_encode($rows); ?>;
+
+console.log(data_payload);
 
 </script>
