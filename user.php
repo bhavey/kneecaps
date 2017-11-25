@@ -19,6 +19,7 @@
 				<?php 
 					echo $current_user."'s Page";
 				?>
+				 <a href="/">(Go back)</a>
 			</span>
 		</div>
 		<div class="content_section floating_element">
@@ -75,7 +76,7 @@
 				</tr>					
 			<?php
 //				$conn = include 'mysql_auth.php';
-				$sql = "SELECT * FROM transaction WHERE toUser=\"" . $current_id . "\" OR fromUser=\"" . $current_id . "\"";
+				$sql = "SELECT * FROM transaction WHERE isActive=1 AND (toUser=\"" . $current_id . "\" OR fromUser=\"" . $current_id . "\")";
 				$result = $conn->query($sql);
 				if ($result->num_rows > 0) {
 					// output data of each row

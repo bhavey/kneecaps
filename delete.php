@@ -2,7 +2,7 @@
 <?php
 	$conn = include 'mysql_auth.php';
 
-	$sql = "DELETE FROM transaction WHERE id=\"" . $_POST["id"] . "\"";
+	$sql = "UPDATE transaction SET isActive=0 WHERE id=\"" . $_POST["id"] . "\"";
 
 	$result = $conn->query($sql);
 
