@@ -119,8 +119,10 @@
 
 				$sql = "SELECT tran.*, tlist.toId, tlist.fromId, tlist.is_active FROM transaction tran INNER JOIN transaction_list tlist ON tlist.transId = tran.id INNER JOIN person p ON tlist.toId = p.id WHERE tran.is_active=1 AND tlist.is_active=1 AND (tlist.fromId=" . $current_id . " OR tlist.toId=" . $current_id . ")";
 
-			//	$sql = "SELECT * FROM transaction WHERE isActive=1 AND (toUser=\"" . $current_id . "\" OR fromUser=\"" . $current_id . "\") ORDER BY ID DESC";
 				$result = $conn->query($sql);
+
+				$total_amounts = array();
+				$total_from_others = array();
 
 				if ($result->num_rows > 0) {
 					// output data of each row
@@ -129,9 +131,6 @@
     					$rows[$row_iter] = $row;
     					$row_iter = $row_iter + 1;
     				}
-    				echo "boop";
-    				echo $rows;
-    				echo "boop";
 
     				$running_value = 0;
     				$running_names = "";
@@ -153,10 +152,12 @@
                             	if ($is_payment)
                             	{
 	                            	$running_names = $running_names.$name_row[$row['fromId']]." / ";
+	                            	$total_from_others[$row['fromId']] = $total_from_others[$row['fromId']] + $row['amount'];
                             	}
                             	else
                             	{
 	                            	$running_names = $running_names.$name_row[$row['toId']]." / ";
+	                            	$total_from_others[$row['toId']] = $total_from_others[$row['toId']] + ($row['amount'] * -1);
                             	}
                             	continue;
                             }
@@ -165,19 +166,18 @@
     					$running_value = $running_value + $row['amount'];
                         if ($is_payment)
                         {
+                        	$total_amounts[$row['id']]=$running_value*-1;
                         	$running_names = $running_names.$name_row[$row['fromId']];
+	                        $total_from_others[$row['fromId']] = $total_from_others[$row['fromId']] + $row['amount'];
     					}
     					else
     					{
+                        	$total_amounts[$row['id']]=$running_value;
                         	$running_names = $running_names.$name_row[$row['toId']];
+	                       	$total_from_others[$row['toId']] = $total_from_others[$row['toId']] + ($row['amount'] * -1);
     					}
-                       	echo $running_names;
 
     					echo "<tr class=\"";
-
-
-
-
     					if ($is_payment)
     					{
 	    					if (!$totalUsers[$row['fromUser']])
@@ -303,7 +303,14 @@ data_payload=<?php echo json_encode($rows); ?>;
 name_row=<?php echo json_encode($name_row) ?>;
 console.log(data_payload);
 
+total_amounts=<?php echo json_encode($total_amounts) ?>;
+
 console.log(<?php echo $current_id; ?>);
 console.log(name_row);
+console.log(total_amounts);
+
+console.log("sums:");
+total_from_others=<?php echo json_encode($total_from_others); ?>;
+console.log(total_from_others);
 
 </script>

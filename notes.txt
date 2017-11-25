@@ -83,7 +83,7 @@ INSERT INTO transaction_list(transId, toId, fromId) VALUES(6, 4, 1);
 INSERT INTO person ( id, name ) VALUES ( 5, 'Alice' );
 
 # 8. Alice owes Ben deposit
-INSERT INTO transaction(id, amount, owner, reason) VALUES (7, 687.50, 1, "Payment");
+INSERT INTO transaction(id, amount, owner, reason) VALUES (7, 687.50, 1, "Security Deposit");
 INSERT INTO transaction_list(transId, toId, fromId) VALUES(7, 1, 5);
 
 
