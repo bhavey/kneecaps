@@ -23,6 +23,8 @@
 			</span>
 		</div>
 		<div class="content_section floating_element">
+			I am owed <span id="what-im-owed" class="payment"></span>,
+			I owe <span id="what-i-owe" class="charge"></span>.
 			<form action="/transaction.php" onsubmit="return validateForm()" name="userform">
 				I want to 
 				<select name="transaction" id="trans_type">
@@ -76,6 +78,8 @@
 				</tr>					
 			<?php
 //				$conn = include 'mysql_auth.php';
+				$totalPositive = 0;
+				$toalNegative = 0;
 				$sql = "SELECT * FROM transaction WHERE isActive=1 AND (toUser=\"" . $current_id . "\" OR fromUser=\"" . $current_id . "\")";
 				$result = $conn->query($sql);
 				if ($result->num_rows > 0) {
@@ -90,6 +94,7 @@
 
     					if ($is_payment)
     					{
+    						$totalPositive = $totalPositive + $row["amount"];
 							$sql = "SELECT * FROM person WHERE id=\"" . $row["fromUser"] . "\"";
 							$result2 = $conn->query($sql);
 							if ($result2->num_rows > 0) {
@@ -99,6 +104,7 @@
     					}
     					else
     					{
+    						$totalNegative = $totalNegative + $row["amount"];
 							$sql = "SELECT * FROM person WHERE id=\"" . $row["toUser"] . "\"";
 							$result2 = $conn->query($sql);
 							if ($result2->num_rows > 0) {
@@ -109,7 +115,7 @@
 						$other_name = $row2["name"];
     					echo "\">";
     					$phpdate = strtotime($row["timestamp"]);
-    					echo "<td id=\"trans-".$row["id"] ."\" style=\"color:red\">" . x . "</td>";
+    					echo "<td id=\"trans-".$row["id"] ."\" style=\"color:red\"><a href=\"#\">" . x . "</a></td>";
     					echo "<td>" . date("m/d/y", $phpdate) . "</td>";
     					echo "<td>$" . number_format($row["amount"],2) . "</td>";
 
@@ -143,4 +149,12 @@ $("[id*=trans-]").click(function() {
 		});
 	}
 });
+
+var total_positive="$"+<?php echo $totalPositive ?>;
+var total_negative="$"+<?php echo $totalNegative ?>;
+
+$("[id='what-im-owed']").text(total_positive);
+$("[id='what-i-owe']").text(total_negative);
+
+
 </script>

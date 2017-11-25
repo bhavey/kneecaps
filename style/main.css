@@ -146,13 +146,16 @@
     float: left;
   }
 
-  tr.payment > td {
+  .payment {
   	color: green;
-  	padding: 1px 50px 1px 0px;
   }
 
-  tr.charge > td {
+  .charge {
   	color: red;
+  }
+
+  tr.payment > td {
+  	padding: 1px 50px 1px 0px;
   }
 
   div.table_of_contents_item a,
