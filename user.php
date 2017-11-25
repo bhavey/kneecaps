@@ -23,8 +23,6 @@
 			</span>
 		</div>
 		<div class="content_section floating_element">
-			I am owed <span id="what-im-owed" class="payment"></span>,
-			I owe <span id="what-i-owe" class="charge"></span>.
 			<form action="/transaction.php" onsubmit="return validateForm()" name="userform">
 				I want to 
 				<select name="transaction" id="trans_type">
@@ -66,6 +64,10 @@
 				<input type="submit" value="GO">
 
 			</form>
+			<br>
+			I am owed <span id="what-im-owed" class="payment">$</span>,
+			I owe <span id="what-i-owe" class="charge">$</span>.
+			 <span id="total-prefix"><span id="total-amount">$</span></span>
 			<br><br>
 
 			<table class="transaction-table">
@@ -150,11 +152,27 @@ $("[id*=trans-]").click(function() {
 	}
 });
 
-var total_positive="$"+<?php echo $totalPositive ?>;
-var total_negative="$"+<?php echo $totalNegative ?>;
+var total_positive=<?php echo $totalPositive ?>;
+var total_negative=<?php echo $totalNegative ?>;
 
-$("[id='what-im-owed']").text(total_positive);
-$("[id='what-i-owe']").text(total_negative);
+$("[id='what-im-owed']").append(total_positive);
+$("[id='what-i-owe']").append(total_negative);
 
+if (total_positive > total_negative)
+{
+	var total_difference=total_positive-total_negative;
+	$("[id='total-prefix']").prepend(' People owe me a total of ');
+	$("[id='total-amount']").append(Number(total_difference).toFixed(2));
+	$("[id='total-amount']").addClass('payment');
+	$("[id='total-prefix']").append('.');
+}
+else
+{
+	var total_difference=total_negative-total_positive;
+	$("[id='total-prefix']").prepend(' I owe people a total of ');
+	$("[id='total-amount']").append(Number(total_difference).toFixed(2));
+	$("[id='total-amount']").addClass('charge');
+	$("[id='total-prefix']").append('.');
+}
 
 </script>
