@@ -85,6 +85,12 @@
     margin: 6px 0px 0px 6px;
   }
 
+  div.inline-checkboxes {
+  	display: inline-block;
+
+  	vertical-align: top;
+  }
+
   div.content_section {
     margin: 3px 3px 3px 3px;
 

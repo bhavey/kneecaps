@@ -30,10 +30,14 @@
 					<option value="Charge">Charge</option>
 				</select>
 
-
+<!--
 				<select name="person" id="person_selection">
 					<option value="Everyone">Everyone</option>
+-->
+<div class="inline-checkboxes">
 			<?php
+				echo "<input type=\"checkbox\" name=\"trans-choices\" value=\"Everyone\">Everyone";
+				echo "<br>";
 				// Get our MySQL connection.
 				$conn = include 'mysql_auth.php';
 				$sql = "SELECT * FROM person";
@@ -47,14 +51,19 @@
 						else
 						{
 							// Fill out everyone else in the drop box.
-							echo "<option value=\"".$row["name"]."\">".$row["name"]."</option>";
+//							echo "<option value=\"".$row["name"]."\">".$row["name"]."</option>";
+							echo "<input type=\"checkbox\" name=\"trans-choices\" value=\"".$row[""]."\">".$row["name"];
+							echo "<br>";
 						}
 					}
 				}
 			?>
+</div>
+<!--
 				</select>
+-->
 
-				$<input type="text" id="thingy" name="dollar_amount">
+				$<input type="text" id="thingy" style="width:50px;" name="dollar_amount">
 				for 
 				<input type="text" name="reason" id="charge_reason">
 
@@ -116,6 +125,7 @@
 				if ($result->num_rows > 0) {
 					// output data of each row
     				while($row = $result->fetch_assoc()) {
+    					$prev_row=$row;
     					echo "<tr class=\"";
     					$is_payment = 0;
 
