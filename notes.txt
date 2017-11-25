@@ -1,13 +1,13 @@
 #Set password for root on first run:
-mysql -u root -p
+# mysql -u root -p
 
 GRANT ALL PRIVILEGES ON *.* TO '<USER_HERE>'@'localhost' IDENTIFIED BY '<PASSWORD_HERE>';
 EXIT;
 
-mysql -u <USER_HERE> -p
+# mysql -u <USER_HERE> -p
 
-CREATE DATABASE knees;
-USE knees;
+CREATE DATABASE <DB_NAME>;
+USE <DB_NAME>;
 
 DROP TABLE person;
 DROP TABLE transaction;
@@ -22,14 +22,13 @@ constraint pk_example primary key (id) );
 INSERT INTO person ( id, name ) VALUES ( 1, 'Ben' );
 INSERT INTO person ( id, name ) VALUES ( 2, 'Luke' );
 INSERT INTO person ( id, name ) VALUES ( 3, 'Johnny' ) ;
-INSERT INTO person ( id, name ) VALUES ( 4, 'Thomaso' );
-INSERT INTO person ( id, name ) VALUES ( 5, 'Alice' );
 
 CREATE TABLE transaction_list (
 id int unsigned not null auto_increment,
 transId int unsigned not null,
 toId int unsigned not null,
 fromId int unsigned not null,
+is_active bool default 1,
 primary key (id) );
 
 CREATE TABLE transaction (
@@ -37,29 +36,68 @@ id int unsigned not null auto_increment,
 timestamp DateTime default CURRENT_TIMESTAMP,
 amount float(32),
 reason varchar(255),
-owner int unsinged not null,
+owner int unsigned not null,
 deleted_by int unsigned default 0,
 is_active bool default 1,
 constraint pk_example primary key (id) );
 
-# Get transactions by the following (in this example Luke and Johnny owe Ben 725.00 in rent)
+# 1. Luke and Johnny owe Ben 725.00 in rent
 INSERT INTO transaction(id, amount, owner, reason) VALUES (1, 725.00, 1, "Oct Rent");
 # transaction_list based on above transaction, give $725 TO Ben amount FROM Luke
 INSERT INTO transaction_list(transId, toId, fromId) VALUES(1, 1, 2);
 INSERT INTO transaction_list(transId, toId, fromId) VALUES(1, 1, 3);
 
-# Here Luke and Ben owe Johnny $4.50 for fries
+# 2. Here Luke and Ben owe Johnny $4.50 for fries
 INSERT INTO transaction(id, amount, owner, reason) VALUES (2, 4.50, 3, "Fries");
 INSERT INTO transaction_list(transId, toId, fromId) VALUES(2, 3, 1);
 INSERT INTO transaction_list(transId, toId, fromId) VALUES(2, 3, 2);
 
-# Luke pays most of rent to Ben
+# 3. Luke pays most of rent to Ben
 INSERT INTO transaction(id, amount, owner, reason) VALUES (3, 700.00, 2, "Payment");
-INSERT INTO transaction_list(transId, toId, fromId) VALUES(3, 1, 2);
+INSERT INTO transaction_list(transId, toId, fromId) VALUES(3, 2, 1);
+
+# 4. Johnny pays all money due back to Ben
+INSERT INTO transaction(id, amount, owner, reason) VALUES (4, 720.50, 3, "Payment");
+INSERT INTO transaction_list(transId, toId, fromId) VALUES(4, 3, 1);
+
+# 5. Johnny leaves
+UPDATE person SET is_active=0 WHERE id=3;
+
+# on deletion all transactions where owner=3 should be marked inactive:
+UPDATE transaction SET is_active=0 WHERE owner=3;
+UPDATE transaction_list SET is_active=0 WHERE toId=3 OR fromId=3;
+
+# Thomaso joins
+INSERT INTO person ( id, name ) VALUES ( 4, 'Thomaso' );
+
+# 6. Luke and Thomaso owe Ben 725.00 in rent
+INSERT INTO transaction(id, amount, owner, reason) VALUES (5, 725.00, 1, "Nov Rent");
+INSERT INTO transaction_list(transId, toId, fromId) VALUES(5, 1, 2);
+INSERT INTO transaction_list(transId, toId, fromId) VALUES(5, 1, 4);
+
+# 7. Thomaso pays
+INSERT INTO transaction(id, amount, owner, reason) VALUES (6, 725.00, 4, "Payment");
+INSERT INTO transaction_list(transId, toId, fromId) VALUES(6, 4, 1);
+
+# Alice joins
+INSERT INTO person ( id, name ) VALUES ( 5, 'Alice' );
+
+# 8. Alice owes Ben deposit
+INSERT INTO transaction(id, amount, owner, reason) VALUES (7, 687.50, 1, "Payment");
+INSERT INTO transaction_list(transId, toId, fromId) VALUES(7, 1, 5);
 
 
-# number_contributers = 
-SELECT COUNT(*) FROM transaction_list WHERE 
+# This call will return the entire transaction data for all active users:
+SELECT tran.*, tlist.toId, tlist.fromId, tlist.is_active
+FROM transaction tran
+INNER JOIN transaction_list tlist
+ON tlist.transId = tran.id
+INNER JOIN person p
+ON tlist.toId = p.id
+WHERE tran.is_active=1 AND tlist.is_active=1;
+
+
+
 
 
 
@@ -70,58 +108,6 @@ INNER JOIN transaction_list tlist
 ON tlist.transId = tran.id
 INNER JOIN person p
 ON tlist.toId = p.id;
-
-
-INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (966.66, 1, 2, "Nov Rent + 1/3");
-INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (966.66, 1, 3, "Nov Rent + 1/3");
-INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (700, 2, 1, "Payment");
-INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (967, 3, 1, "Payment");
-INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (23.50, 1, 2, "Apt Stuff (Sept to 11/11)");
-INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (23.50, 1, 3, "Apt Stuff (Sept to 11/11)");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-CREATE TABLE transaction (
-id int unsigned not null auto_increment, 
-timestamp DateTime default CURRENT_TIMESTAMP,
-amount float(32),
-toUser int,
-fromUser int,
-reason varchar(255),
-is_active bool default 1,
-constraint pk_example primary key (id) );
-
-
-
-INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (966.66, 1, 2, "Nov Rent + 1/3");
-INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (966.66, 1, 3, "Nov Rent + 1/3");
-INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (700, 2, 1, "Payment");
-INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (967, 3, 1, "Payment");
-INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (23.50, 1, 2, "Apt Stuff (Sept to 11/11)");
-INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (23.50, 1, 3, "Apt Stuff (Sept to 11/11)");
-
-
-
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Real Data Below
@@ -160,3 +146,14 @@ INSERT INTO transaction(id, amount, reason) VALUES (1, 966.66, "Nov Rent + 1/3")
 INSERT INTO transaction_list(transId, toId, fromId) VALUES(1, 1, 2);
 # transaction_list based on above transaction, give TO Ben amount FROM Thomaso
 INSERT INTO transaction_list(transId, toId, fromId) VALUES(1, 1, 3);
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Some old data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (966.66, 1, 2, "Nov Rent + 1/3");
+INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (966.66, 1, 3, "Nov Rent + 1/3");
+INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (700, 2, 1, "Payment");
+INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (967, 3, 1, "Payment");
+INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (23.50, 1, 2, "Apt Stuff (Sept to 11/11)");
+INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (23.50, 1, 3, "Apt Stuff (Sept to 11/11)");
