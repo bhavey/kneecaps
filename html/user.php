@@ -30,11 +30,7 @@
 					<option value="Charge">Charge</option>
 				</select>
 
-<!--
-				<select name="person" id="person_selection">
-					<option value="Everyone">Everyone</option>
--->
-<div class="inline-checkboxes">
+			<div class="inline-checkboxes">
 			<?php
 				echo "<input type=\"checkbox\" name=\"trans-choices\" value=\"Everyone\">Everyone";
 				echo "<br>";
@@ -42,8 +38,11 @@
 				$conn = include 'mysql_auth.php';
 				$sql = "SELECT * FROM person";
 				$result = $conn->query($sql);
+
+				$name_row = array();
 				if ($result->num_rows > 0) {
     				while($row = $result->fetch_assoc()) {
+    					$name_row[$row["id"]] = $row["name"];
     					if ($row["name"] == $current_user)
     					{
 							$current_id = $row["id"];
@@ -58,10 +57,7 @@
 					}
 				}
 			?>
-</div>
-<!--
-				</select>
--->
+			</div>
 
 				$<input type="text" id="thingy" style="width:50px;" name="dollar_amount">
 				for 
@@ -137,16 +133,50 @@
     				echo $rows;
     				echo "boop";
 
-    				for ($i = 0; $i < count($rows); $i++) {
+    				$running_value = 0;
+    				$running_names = "";
+    				for ($i = 0; $i < count($rows); $i++)
+    				{
     					$row = $rows[$i];
-    					echo "<tr class=\"";
     					$is_payment = 0;
-
-
-    					if ($row['toUser'] == $current_id)
+    					if ($row['toId'] == $current_id)
     					{
     						$is_payment = 1;
     					}
+    					if ($i != count($rows)-1)
+    					{
+                            $next_row = $rows[$i+1];
+                            if ($next_row['id'] == $row['id'])
+                            {
+                            	$running_value = $running_value+$row['amount'];
+
+                            	if ($is_payment)
+                            	{
+	                            	$running_names = $running_names.$name_row[$row['fromId']]." / ";
+                            	}
+                            	else
+                            	{
+	                            	$running_names = $running_names.$name_row[$row['toId']]." / ";
+                            	}
+                            	continue;
+                            }
+    					}
+
+    					$running_value = $running_value + $row['amount'];
+                        if ($is_payment)
+                        {
+                        	$running_names = $running_names.$name_row[$row['fromId']];
+    					}
+    					else
+    					{
+                        	$running_names = $running_names.$name_row[$row['toId']];
+    					}
+                       	echo $running_names;
+
+    					echo "<tr class=\"";
+
+
+
 
     					if ($is_payment)
     					{
@@ -183,11 +213,13 @@
     					$phpdate = strtotime($row["timestamp"]);
     					echo "<td id=\"trans-".$row["id"] ."\" style=\"color:black\"><a href=\"#\">" . x . "</a></td>";
     					echo "<td>" . date("m/d/y", $phpdate) . "</td>";
-    					echo "<td>$" . number_format($row["amount"],2) . "</td>";
+    					echo "<td>$" . number_format($running_value,2) . "</td>";
 
-    					echo "<td>" . $other_name . "</td>";
+    					echo "<td>" . $running_names . "</td>";
     					echo "<td>" . $row["reason"] . "</td>";
         				echo "</tr>";
+        				$running_value=0;
+	    				$running_names="";
     				}
 				}
 
@@ -268,7 +300,10 @@ else
 }
 
 data_payload=<?php echo json_encode($rows); ?>;
-
+name_row=<?php echo json_encode($name_row) ?>;
 console.log(data_payload);
+
+console.log(<?php echo $current_id; ?>);
+console.log(name_row);
 
 </script>
