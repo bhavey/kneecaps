@@ -64,7 +64,8 @@
 				<input type="text" name="reason" id="charge_reason">
 
 			<?php
-				echo "<input type=\"hidden\" name=\"from_user\" value=\"".$current_id."\">"
+				echo "<input type=\"hidden\" name=\"from_user\" value=\"".$current_id."\">";
+				echo "<input type=\"hidden\" name=\"user_name\" value=\"".$current_user."\">";
 			?>
 				<input type="submit" value="GO">
 

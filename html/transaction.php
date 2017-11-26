@@ -38,6 +38,7 @@
 	$reason = htmlspecialchars($_GET["reason"]);
 	$from_user = htmlspecialchars($_GET["from_user"]);
 	$trans_choices = $_GET["trans-choices"];
+	$user_name = htmlspecialchars($_GET["user_name"]);
 
 	$their_ids = array();
 
@@ -52,7 +53,7 @@
 
 	echo "this guy";
 
-	$res = $conn->query('SELECT LAST_INSERT_ID()');
+	$res = $conn->query('SELECT LAST_INSERT_ID() FROM transaction');
 
 	$row = $res->fetch_assoc();
 	echo "that guy";
@@ -66,21 +67,29 @@
 
 	foreach($trans_choices as $choice)
 	{
-
 //INSERT INTO transaction_list(transId, toId, fromId) VALUES(5, 1, 2);
 
+		$to_id=0;
+		$from_id=0;
+		if ($transaction == "Pay")
+		{
+			$to_id=$choice;
+			$from_id=$from_user;
+		}
+		else
+		{
+			$to_id=$from_user;	
+			$from_id=$choice;
+		}
 
-//		$sql = "INSERT INTO transaction (transID, toId, fromId) VALUES (".$dollar_amount.", ".$to_id.", ".$from_id.", \"".$reason."\")";
-//		$conn->query($sql);
-
+		$sql = "INSERT INTO transaction_list (transID, toId, fromId) VALUES (".$last_id.", ".$to_id.", ".$from_id.")";
+		$conn->query($sql);
 	}
 	$conn->close();
-*/
-
 ?>
 <script>
 trans_choices= <?php echo json_encode($trans_choices); ?>;
 console.log("trans_choices: ");
 console.log(trans_choices);
-//	document.location = "/user.php?user=<?php echo $current_user;?>";
+	document.location = "/user.php?user=<?php echo $user_name;?>";
 </script>
