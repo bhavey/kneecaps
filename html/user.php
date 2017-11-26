@@ -32,8 +32,8 @@
 
 			<div class="inline-checkboxes">
 			<?php
-				echo "<input type=\"checkbox\" name=\"trans-choices\" value=\"0\">Everyone";
-				echo "<br>";
+//				echo "<input type=\"checkbox\" name=\"trans-choices\" value=\"0\">Everyone";
+//				echo "<br>";
 				// Get our MySQL connection.
 				$conn = include 'mysql_auth.php';
 				$sql = "SELECT * FROM person WHERE is_active=1";
