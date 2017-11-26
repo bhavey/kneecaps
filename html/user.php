@@ -32,7 +32,7 @@
 
 			<div class="inline-checkboxes">
 			<?php
-				echo "<input type=\"checkbox\" name=\"trans-choices\" value=\"Everyone\">Everyone";
+				echo "<input type=\"checkbox\" name=\"trans-choices\" value=\"0\">Everyone";
 				echo "<br>";
 				// Get our MySQL connection.
 				$conn = include 'mysql_auth.php';
@@ -51,7 +51,7 @@
 						{
 							// Fill out everyone else in the drop box.
 //							echo "<option value=\"".$row["name"]."\">".$row["name"]."</option>";
-							echo "<input type=\"checkbox\" name=\"trans-choices\" value=\"".$row[""]."\">".$row["name"];
+							echo "<input type=\"checkbox\" name=\"trans-choices[]\" value=\"".$row["id"]."\">".$row["name"];
 							echo "<br>";
 						}
 					}
@@ -64,7 +64,7 @@
 				<input type="text" name="reason" id="charge_reason">
 
 			<?php
-				echo "<input type=\"hidden\" name=\"from_user\" value=\"".$current_user."\">"
+				echo "<input type=\"hidden\" name=\"from_user\" value=\"".$current_id."\">"
 			?>
 				<input type="submit" value="GO">
 

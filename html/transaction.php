@@ -37,52 +37,50 @@
 	$dollar_amount = htmlspecialchars($_GET["dollar_amount"]);
 	$reason = htmlspecialchars($_GET["reason"]);
 	$from_user = htmlspecialchars($_GET["from_user"]);
+	$trans_choices = $_GET["trans-choices"];
 
 	$their_ids = array();
 
-	$sql = "SELECT * FROM person";
+//	INSERT INTO transaction(amount, owner, reason) VALUES (725.00, 1, "Nov Rent");
+
+
+
+	$sql = "INSERT INTO transaction (amount, owner, reason ) VALUES (".$dollar_amount.",".$from_user.", \"".$reason."\")";
 	$result = $conn->query($sql);
-	if ($result->num_rows > 0) {
-    	while($row = $result->fetch_assoc()) {
-    		if ($row["name"] == $from_user)
-    		{
-				$my_id = $row["id"];
-			}
-			else
-			{
-				if ($person == "Everyone")
-				{
-					array_push($their_ids, $row["id"]);
-				}
-				else if ($person == $row["name"])
-				{
-					array_push($their_ids, $row["id"]);
-				}
-			}
-		}
-	}
 
-	for ($i = 0, $size = count($their_ids); $i < $size; ++$i)
+//	echo $sql;
+
+	echo "this guy";
+
+	$res = $conn->query('SELECT LAST_INSERT_ID()');
+
+	$row = $res->fetch_assoc();
+	echo "that guy";
+//	$row = $conn->fetch_array($res);
+	echo "even this guy";
+//	$lastInsertId = $row[0];
+
+	echo "last insert id:";
+	$last_id = json_encode($row['LAST_INSERT_ID()']);
+
+
+	foreach($trans_choices as $choice)
 	{
-		$their_id = $their_ids[$i];
-		$from_id = 0;
-		$to_id = 0;
-		if ($transaction == "Pay")
-		{
-			$to_id = $their_id;
-			$from_id = $my_id;
-		}
-		else
-		{
-			$to_id = $my_id;
-			$from_id = $their_id;
-		}
-		$sql = "INSERT INTO transaction (amount, toUser, fromUser, reason ) VALUES (".$dollar_amount.", ".$to_id.", ".$from_id.", \"".$reason."\")";
-		$conn->query($sql);
-	}
 
+//INSERT INTO transaction_list(transId, toId, fromId) VALUES(5, 1, 2);
+
+
+//		$sql = "INSERT INTO transaction (transID, toId, fromId) VALUES (".$dollar_amount.", ".$to_id.", ".$from_id.", \"".$reason."\")";
+//		$conn->query($sql);
+
+	}
 	$conn->close();
+*/
+
 ?>
 <script>
-	document.location = "/user.php?user=<?php echo $current_user;?>";
+trans_choices= <?php echo json_encode($trans_choices); ?>;
+console.log("trans_choices: ");
+console.log(trans_choices);
+//	document.location = "/user.php?user=<?php echo $current_user;?>";
 </script>
