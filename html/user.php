@@ -172,21 +172,42 @@
                             }
     					}
                        	$running_value = $running_value+$row['amount'];
+
 /*
-                    	if ($row['owner']==$current_id)
-                    	{
-                        	$running_value = $running_value+$row['amount'];
-                        }
-                        else
-                        {
-                        	$running_value = $running_value-$row['amount'];
-                        }
-*/
                         if ($is_payment)
                         {
                         	$total_amounts[$row['id']]=$running_value;
                         	$running_names = $running_names.$name_row[$row['fromId']];
-//	                        $total_from_others[$row['fromId']] = $total_from_others[$row['fromId']] + $row['amount'];
+                        	if ($row['owner']==$current_id)
+                        	{
+		                        $total_from_others[$row['fromId']] = $total_from_others[$row['fromId']] + $row['amount'];
+                        	}
+                        	else
+                        	{
+		                        $total_from_others[$row['fromId']] = $total_from_others[$row['fromId']] - $row['amount'];                        		
+                        	}
+    					}
+    					else
+    					{
+                        	$total_amounts[$row['id']]=$running_value*-1;
+                        	$running_names = $running_names.$name_row[$row['toId']];
+                        	if ($row['owner']==$current_id)
+                        	{
+		                       	$total_from_others[$row['toId']] = $total_from_others[$row['toId']] + $row['amount'];
+		                    }
+		                    else
+		                    {
+		                       	$total_from_others[$row['toId']] = $total_from_others[$row['toId']] - $row['amount'];		                    	
+		                    }
+
+    					}
+    					*/
+
+
+                        if ($is_payment)
+                        {
+                        	$total_amounts[$row['id']]=$running_value;
+                        	$running_names = $running_names.$name_row[$row['fromId']];
                         	if ($row['owner']==$current_id)
                         	{
 		                        $total_from_others[$row['fromId']] = $total_from_others[$row['fromId']] + $row['amount'];
@@ -271,7 +292,6 @@
 	    				$running_names="";
     				}
 				}
-				echo "past that all.";
 
 				$conn->close();
 			?>
@@ -306,35 +326,19 @@ $("[id*=trans-]").click(function() {
 var total_positive=<?php echo $totalPositive ?>;
 var total_negative=<?php echo $totalNegative ?>;
 
-console.log("This many... ");
-console.log(<?php echo $totalUsers[2]; ?>);
 
 $("[id='what-im-owed']").append(total_positive);
 $("[id='what-i-owe']").append(total_negative);
 
-<?php $jsonData = json_encode($totalUsers); ?>
-var json_data = <?php echo $jsonData; ?>;
-
-console.log(json_data);
-
-
 data_payload=<?php echo json_encode($rows); ?>;
 name_row=<?php echo json_encode($name_row) ?>;
-console.log(data_payload);
 
 total_amounts=<?php echo json_encode($total_amounts) ?>;
-
-console.log(<?php echo $current_id; ?>);
-console.log(name_row);
-
-console.log("sums:");
 total_from_others=<?php echo json_encode($total_from_others); ?>;
-console.log(total_from_others);
 
+total_amount=0;
 for (var key in total_from_others)
 {
-	console.log("this iter:");
-	console.log(total_from_others[key]);
 	var is_negative=false;
 	if (total_from_others[key] < 0)
 	{
@@ -351,15 +355,9 @@ for (var key in total_from_others)
 		$(needed_id).addClass('payment');
 		$(needed_id).text("$"+total_from_others[key]);
 	}
+	total_amount=total_amount+total_from_others[key];
 }
 
-
-
-total_amount=0;
-
-for (x in total_amounts) {
-	total_amount=total_amount + total_amounts[x];
-}
 console.log("total_amount:");
 console.log(total_amount);
 
