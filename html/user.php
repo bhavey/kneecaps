@@ -262,25 +262,6 @@ var json_data = <?php echo $jsonData; ?>;
 
 console.log(json_data);
 
-for (var key in json_data)
-{
-	var is_negative=false;
-	if (json_data[key] < 0)
-	{
-		is_negative = true;
-	}
-	var needed_id="[id='total-"+key+"']";
-	if (is_negative)
-	{
-		$(needed_id).addClass('charge');
-		$(needed_id).text("$"+(json_data[key]*-1));
-	}
-	else
-	{
-		$(needed_id).addClass('payment');
-		$(needed_id).text("$"+json_data[key]);
-	}
-}
 
 data_payload=<?php echo json_encode($rows); ?>;
 name_row=<?php echo json_encode($name_row) ?>;
@@ -290,6 +271,34 @@ total_amounts=<?php echo json_encode($total_amounts) ?>;
 
 console.log(<?php echo $current_id; ?>);
 console.log(name_row);
+
+console.log("sums:");
+total_from_others=<?php echo json_encode($total_from_others); ?>;
+console.log(total_from_others);
+
+for (var key in total_from_others)
+{
+	console.log("this iter:");
+	console.log(total_from_others[key]);
+	var is_negative=false;
+	if (total_from_others[key] < 0)
+	{
+		is_negative = true;
+	}
+	var needed_id="[id='total-"+key+"']";
+	if (is_negative)
+	{
+		$(needed_id).addClass('charge');
+		$(needed_id).text("$"+(total_from_others[key]*-1));
+	}
+	else
+	{
+		$(needed_id).addClass('payment');
+		$(needed_id).text("$"+total_from_others[key]);
+	}
+}
+
+
 
 total_amount=0;
 
@@ -314,8 +323,5 @@ else
 	$("[id='total-prefix']").append('.');
 }
 
-console.log("sums:");
-total_from_others=<?php echo json_encode($total_from_others); ?>;
-console.log(total_from_others);
 
 </script>
