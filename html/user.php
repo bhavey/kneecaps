@@ -149,7 +149,14 @@
                             $next_row = $rows[$i+1];
                             if ($next_row['id'] == $row['id'])
                             {
-                            	$running_value = $running_value+$row['amount'];
+                            	if ($row['owner']==$current_id)
+                            	{
+	                            	$running_value = $running_value+$row['amount'];
+	                            }
+	                            else
+	                            {
+	                            	$running_value = $running_value-$row['amount'];
+	                            }
 
                             	if ($is_payment)
                             	{
@@ -164,19 +171,44 @@
                             	continue;
                             }
     					}
-
-    					$running_value = $running_value + $row['amount'];
+                       	$running_value = $running_value+$row['amount'];
+/*
+                    	if ($row['owner']==$current_id)
+                    	{
+                        	$running_value = $running_value+$row['amount'];
+                        }
+                        else
+                        {
+                        	$running_value = $running_value-$row['amount'];
+                        }
+*/
                         if ($is_payment)
                         {
                         	$total_amounts[$row['id']]=$running_value;
                         	$running_names = $running_names.$name_row[$row['fromId']];
-	                        $total_from_others[$row['fromId']] = $total_from_others[$row['fromId']] + $row['amount'];
+//	                        $total_from_others[$row['fromId']] = $total_from_others[$row['fromId']] + $row['amount'];
+                        	if ($row['owner']==$current_id)
+                        	{
+		                        $total_from_others[$row['fromId']] = $total_from_others[$row['fromId']] + $row['amount'];
+                        	}
+                        	else
+                        	{
+		                        $total_from_others[$row['fromId']] = $total_from_others[$row['fromId']] - $row['amount'];                        		
+                        	}
     					}
     					else
     					{
                         	$total_amounts[$row['id']]=$running_value*-1;
                         	$running_names = $running_names.$name_row[$row['toId']];
-	                       	$total_from_others[$row['toId']] = $total_from_others[$row['toId']] + ($row['amount'] * -1);
+                        	if ($row['owner']==$current_id)
+                        	{
+		                       	$total_from_others[$row['toId']] = $total_from_others[$row['toId']] + $row['amount'];
+		                    }
+		                    else
+		                    {
+		                       	$total_from_others[$row['toId']] = $total_from_others[$row['toId']] - $row['amount'];		                    	
+		                    }
+
     					}
 
     					echo "<tr class=\"";
@@ -193,7 +225,14 @@
 							if ($result2->num_rows > 0) {
 								$row2 = $result2->fetch_assoc();
 							}
-    						echo "payment";
+                        	if ($row['owner']==$current_id)
+							{
+    							echo "payment";
+    						}
+    						else
+    						{
+    							echo "charge";
+    						}
     					}
     					else
     					{
@@ -208,19 +247,20 @@
 							if ($result2->num_rows > 0) {
 								$row2 = $result2->fetch_assoc();
 							}
-    						echo "charge";
+                        	if ($row['owner']==$current_id)
+							{
+	    						echo "charge";
+	    					}
+	    					else
+	    					{
+	    						echo "payment";
+	    					}
+
     					}
 						$other_name = $row2["name"];
     					echo "\">";
     					$phpdate = strtotime($row["timestamp"]);
-    					if ($is_payment)
-    					{
-	    					echo "<td id=\"trans-".$row["id"] ."\" style=\"color:black\"><a href=\"#\">" . x . "</a></td>";    						
-    					}
-    					else
-    					{
-    						echo "<td id=\"trans2-".$row["id"] ."\" style=\"color:black\">" . NA . "</td>";
-    					}
+    					echo "<td id=\"trans-".$row["id"] ."\" style=\"color:black\"><a href=\"#\">" . x . "</a></td>";    						
     					echo "<td>" . date("m/d/y", $phpdate) . "</td>";
     					echo "<td>$" . number_format($running_value,2) . "</td>";
 
@@ -231,6 +271,7 @@
 	    				$running_names="";
     				}
 				}
+				echo "past that all.";
 
 				$conn->close();
 			?>
@@ -249,12 +290,12 @@ $("[id*=trans-]").click(function() {
 	console.log(user_id);
 	console.log("this id: ");
 	console.log(id);
-	var r = confirm("Are you sure you want to remove this entry? It will also disappear on the other person's page.");
+	var r = confirm("You only delete an entry made by mistake. If you've paid off your portion of a bill use the toolbar above to record it as a payment instead of deleting the entry itself.");
 	if (r == true)
 	{
 		result = $.post("delete.php", { id: id, user_id: user_id, from_user: "<?php echo $current_user; ?>" })
 		.done(function() {
-			location.reload();
+//			location.reload();
 		})
 		.fail(function() {
 			alert("Failed to remove entry.");

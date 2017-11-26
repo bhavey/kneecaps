@@ -21,7 +21,8 @@ constraint pk_example primary key (id) );
 
 INSERT INTO person ( id, name ) VALUES ( 1, 'Ben' );
 INSERT INTO person ( id, name ) VALUES ( 2, 'Luke' );
-INSERT INTO person ( id, name ) VALUES ( 3, 'Johnny' ) ;
+INSERT INTO person ( id, name ) VALUES ( 3, 'Thomaso' ) ;
+INSERT INTO person ( id, name ) VALUES ( 4, 'Alice' ) ;
 
 CREATE TABLE transaction_list (
 id int unsigned not null auto_increment,

@@ -44,6 +44,8 @@
 
 //	INSERT INTO transaction(amount, owner, reason) VALUES (725.00, 1, "Nov Rent");
 
+	echo "transaction";
+	echo $transaction;
 
 
 	$sql = "INSERT INTO transaction (amount, owner, reason ) VALUES (".$dollar_amount.",".$from_user.", \"".$reason."\")";
@@ -69,6 +71,8 @@
 	{
 		$to_id=0;
 		$from_id=0;
+
+		echo "also just for fun";
 		if ($transaction == "Pay")
 		{
 			$to_id=$choice;
@@ -79,6 +83,7 @@
 			$to_id=$from_user;	
 			$from_id=$choice;
 		}
+		echo ".to_id: ".$to_id.", from_id: ".$from_id;
 
 		$sql = "INSERT INTO transaction_list (transID, toId, fromId) VALUES (".$last_id.", ".$to_id.", ".$from_id.")";
 		$conn->query($sql);
@@ -89,5 +94,5 @@
 trans_choices= <?php echo json_encode($trans_choices); ?>;
 console.log("trans_choices: ");
 console.log(trans_choices);
-	document.location = "/user.php?user=<?php echo $user_name;?>";
+//	document.location = "/user.php?user=<?php echo $user_name;?>";
 </script>
