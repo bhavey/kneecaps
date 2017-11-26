@@ -348,12 +348,12 @@ for (var key in total_from_others)
 	if (is_negative)
 	{
 		$(needed_id).addClass('charge');
-		$(needed_id).text("$"+(total_from_others[key]*-1));
+		$(needed_id).text("$"+Number(total_from_others[key]*-1).toFixed(2));
 	}
 	else
 	{
 		$(needed_id).addClass('payment');
-		$(needed_id).text("$"+total_from_others[key]);
+		$(needed_id).text("$"+Number(total_from_others[key]).toFixed(2));
 	}
 	total_amount=total_amount+total_from_others[key];
 }
