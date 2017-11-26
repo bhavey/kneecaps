@@ -36,7 +36,7 @@
 				echo "<br>";
 				// Get our MySQL connection.
 				$conn = include 'mysql_auth.php';
-				$sql = "SELECT * FROM person";
+				$sql = "SELECT * FROM person WHERE is_active=1";
 				$result = $conn->query($sql);
 
 				$name_row = array();
@@ -75,7 +75,7 @@
 			<table class="transaction-table">
 				<tr>
 				<?php
-					$sql = "SELECT * FROM person";
+					$sql = "SELECT * FROM person WHERE is_active=1 AND id!=".$current_id;
 					$result = $conn->query($sql);
 					if ($result->num_rows > 0) {
 						if ($row["id"] != $current_id)
@@ -89,7 +89,7 @@
 				</tr>
 				<tr>
 				<?php
-					$sql = "SELECT * FROM person";
+					$sql = "SELECT * FROM person WHERE is_active=1 AND id!=".$current_id;
 					$result = $conn->query($sql);
 					if ($result->num_rows > 0) {
 						if ($row["id"] != $current_id)
