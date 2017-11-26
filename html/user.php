@@ -117,7 +117,8 @@
 				$totalNegative = 0;
 				$totalUsers = array();
 
-				$sql = "SELECT tran.*, tlist.toId, tlist.fromId, tlist.is_active FROM transaction tran INNER JOIN transaction_list tlist ON tlist.transId = tran.id INNER JOIN person p ON tlist.toId = p.id WHERE tran.is_active=1 AND tlist.is_active=1 AND (tlist.fromId=" . $current_id . " OR tlist.toId=" . $current_id . ")";
+				// lol sorry
+				$sql = "SELECT tran.*, tlist.toId, tlist.fromId, tlist.is_active FROM transaction tran INNER JOIN transaction_list tlist ON tlist.transId = tran.id INNER JOIN person p ON tlist.toId = p.id WHERE tran.is_active=1 AND tlist.is_active=1 AND (tlist.fromId=" . $current_id . " OR tlist.toId=" . $current_id . ") ORDER BY tlist.id DESC";
 
 				$result = $conn->query($sql);
 
