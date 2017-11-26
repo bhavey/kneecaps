@@ -67,8 +67,6 @@
 
 	foreach($trans_choices as $choice)
 	{
-//INSERT INTO transaction_list(transId, toId, fromId) VALUES(5, 1, 2);
-
 		$to_id=0;
 		$from_id=0;
 		if ($transaction == "Pay")

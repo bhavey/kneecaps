@@ -2,9 +2,11 @@
 <?php
 	$conn = include 'mysql_auth.php';
 
-	$sql = "UPDATE transaction SET isActive=0 WHERE id=\"" . $_POST["id"] . "\"";
+	$sql = "UPDATE transaction SET is_active=0, deleted_by=" . $_POST["user_id"] . " WHERE id=" . $_POST["id"];
+	echo $sql;
 
-	$result = $conn->query($sql);
+	$conn->query($sql);
+	echo "post conn";
 
 	$conn->close();
 ?>

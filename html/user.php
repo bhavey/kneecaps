@@ -213,7 +213,14 @@
 						$other_name = $row2["name"];
     					echo "\">";
     					$phpdate = strtotime($row["timestamp"]);
-    					echo "<td id=\"trans-".$row["id"] ."\" style=\"color:black\"><a href=\"#\">" . x . "</a></td>";
+    					if ($is_payment)
+    					{
+	    					echo "<td id=\"trans-".$row["id"] ."\" style=\"color:black\"><a href=\"#\">" . x . "</a></td>";    						
+    					}
+    					else
+    					{
+    						echo "<td id=\"trans2-".$row["id"] ."\" style=\"color:black\">" . NA . "</td>";
+    					}
     					echo "<td>" . date("m/d/y", $phpdate) . "</td>";
     					echo "<td>$" . number_format($running_value,2) . "</td>";
 
@@ -237,10 +244,15 @@
 <script>
 $("[id*=trans-]").click(function() {
 	var id = $(this).attr("id").split('-')[1];
+	var user_id = <?php echo $current_id; ?>;
+	console.log("user_id: ");
+	console.log(user_id);
+	console.log("this id: ");
+	console.log(id);
 	var r = confirm("Are you sure you want to remove this entry? It will also disappear on the other person's page.");
 	if (r == true)
 	{
-		$.post("delete.php", { id: id, from_user: "<?php echo $current_user; ?>" })
+		result = $.post("delete.php", { id: id, user_id: user_id, from_user: "<?php echo $current_user; ?>" })
 		.done(function() {
 			location.reload();
 		})
@@ -324,6 +336,5 @@ else
 	$("[id='total-amount']").addClass('charge');
 	$("[id='total-prefix']").append('.');
 }
-
 
 </script>
