@@ -249,11 +249,11 @@
 							}
                         	if ($row['owner']==$current_id)
 							{
-	    						echo "charge";
+	    						echo "payment";
 	    					}
 	    					else
 	    					{
-	    						echo "payment";
+	    						echo "charge";
 	    					}
 
     					}
@@ -295,7 +295,7 @@ $("[id*=trans-]").click(function() {
 	{
 		result = $.post("delete.php", { id: id, user_id: user_id, from_user: "<?php echo $current_user; ?>" })
 		.done(function() {
-//			location.reload();
+			location.reload();
 		})
 		.fail(function() {
 			alert("Failed to remove entry.");

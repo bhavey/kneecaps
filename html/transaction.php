@@ -94,5 +94,5 @@
 trans_choices= <?php echo json_encode($trans_choices); ?>;
 console.log("trans_choices: ");
 console.log(trans_choices);
-//	document.location = "/user.php?user=<?php echo $user_name;?>";
+	document.location = "/user.php?user=<?php echo $user_name;?>";
 </script>
