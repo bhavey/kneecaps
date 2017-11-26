@@ -166,13 +166,13 @@
     					$running_value = $running_value + $row['amount'];
                         if ($is_payment)
                         {
-                        	$total_amounts[$row['id']]=$running_value*-1;
+                        	$total_amounts[$row['id']]=$running_value;
                         	$running_names = $running_names.$name_row[$row['fromId']];
 	                        $total_from_others[$row['fromId']] = $total_from_others[$row['fromId']] + $row['amount'];
     					}
     					else
     					{
-                        	$total_amounts[$row['id']]=$running_value;
+                        	$total_amounts[$row['id']]=$running_value*-1;
                         	$running_names = $running_names.$name_row[$row['toId']];
 	                       	$total_from_others[$row['toId']] = $total_from_others[$row['toId']] + ($row['amount'] * -1);
     					}
@@ -282,23 +282,6 @@ for (var key in json_data)
 	}
 }
 
-if (total_positive > total_negative)
-{
-	var total_difference=total_positive-total_negative;
-	$("[id='total-prefix']").prepend(' People owe me a total of ');
-	$("[id='total-amount']").append(Number(total_difference).toFixed(2));
-	$("[id='total-amount']").addClass('payment');
-	$("[id='total-prefix']").append('.');
-}
-else
-{
-	var total_difference=total_negative-total_positive;
-	$("[id='total-prefix']").prepend(' I owe people a total of ');
-	$("[id='total-amount']").append(Number(total_difference).toFixed(2));
-	$("[id='total-amount']").addClass('charge');
-	$("[id='total-prefix']").append('.');
-}
-
 data_payload=<?php echo json_encode($rows); ?>;
 name_row=<?php echo json_encode($name_row) ?>;
 console.log(data_payload);
@@ -307,7 +290,29 @@ total_amounts=<?php echo json_encode($total_amounts) ?>;
 
 console.log(<?php echo $current_id; ?>);
 console.log(name_row);
-console.log(total_amounts);
+
+total_amount=0;
+
+for (x in total_amounts) {
+	total_amount=total_amount + total_amounts[x];
+}
+console.log("total_amount:");
+console.log(total_amount);
+
+if (total_amount > 0)
+{
+	$("[id='total-prefix']").prepend(' People owe me a total of ');
+	$("[id='total-amount']").append(Number(total_amount).toFixed(2));
+	$("[id='total-amount']").addClass('payment');
+	$("[id='total-prefix']").append('.');
+}
+else
+{
+	$("[id='total-prefix']").prepend(' I owe people a total of ');
+	$("[id='total-amount']").append(Number(total_amount*-1).toFixed(2));
+	$("[id='total-amount']").addClass('charge');
+	$("[id='total-prefix']").append('.');
+}
 
 console.log("sums:");
 total_from_others=<?php echo json_encode($total_from_others); ?>;
