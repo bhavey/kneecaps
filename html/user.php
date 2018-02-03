@@ -60,7 +60,7 @@
 			</div>
 
 				$<input type="text" id="thingy" style="width:50px;" name="dollar_amount">
-				for 
+				each for 
 				<input type="text" name="reason" id="charge_reason">
 
 			<?php
@@ -149,7 +149,7 @@
                             $next_row = $rows[$i+1];
                             if ($next_row['id'] == $row['id'])
                             {
-                            	if ($row['toId']==$current_id)
+                            	if ($row['owner']==$current_id)
                             	{
 	                            	$running_value = $running_value+$row['amount'];
 	                            }
@@ -208,7 +208,7 @@
                         {
                         	$total_amounts[$row['id']]=$running_value;
                         	$running_names = $running_names.$name_row[$row['fromId']];
-                        	if ($row['toId']==$current_id)
+                        	if ($row['owner']==$current_id)
                         	{
 		                        $total_from_others[$row['fromId']] = $total_from_others[$row['fromId']] + $row['amount'];
                         	}
@@ -221,7 +221,7 @@
     					{
                         	$total_amounts[$row['id']]=$running_value*-1;
                         	$running_names = $running_names.$name_row[$row['toId']];
-                        	if ($row['toId']==$current_id)
+                        	if ($row['owner']==$current_id)
                         	{
 		                       	$total_from_others[$row['toId']] = $total_from_others[$row['toId']] + $row['amount'];
 		                    }
@@ -246,7 +246,7 @@
 							if ($result2->num_rows > 0) {
 								$row2 = $result2->fetch_assoc();
 							}
-                        	if ($row['toId']==$current_id)
+                        	if ($row['owner']==$current_id)
 							{
     							echo "payment";
     						}
@@ -268,7 +268,7 @@
 							if ($result2->num_rows > 0) {
 								$row2 = $result2->fetch_assoc();
 							}
-                        	if ($row['toId']==$current_id)
+                        	if ($row['owner']==$current_id)
 							{
 	    						echo "payment";
 	    					}
