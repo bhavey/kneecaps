@@ -23,41 +23,41 @@
 			</span>
 		</div>
 		<div class="content_section floating_element">
-			<form action="/transaction.php" name="userform">
+			<form id="trans-form" action="/transaction.php" name="userform">
 				I want to 
 				<select name="transaction" id="trans_type">
 					<option value="Pay">Pay</option>
 					<option value="Charge">Charge</option>
 				</select>
 
-			<div class="inline-checkboxes">
-			<?php
-//				echo "<input type=\"checkbox\" name=\"trans-choices\" value=\"0\">Everyone";
-//				echo "<br>";
-				// Get our MySQL connection.
-				$conn = include 'mysql_auth.php';
-				$sql = "SELECT * FROM person WHERE is_active=1";
-				$result = $conn->query($sql);
+				<div class="inline-checkboxes">
+				<?php
+	//				echo "<input type=\"checkbox\" name=\"trans-choices\" value=\"0\">Everyone";
+	//				echo "<br>";
+					// Get our MySQL connection.
+					$conn = include 'mysql_auth.php';
+					$sql = "SELECT * FROM person WHERE is_active=1";
+					$result = $conn->query($sql);
 
-				$name_row = array();
-				if ($result->num_rows > 0) {
-    				while($row = $result->fetch_assoc()) {
-    					$name_row[$row["id"]] = $row["name"];
-    					if ($row["name"] == $current_user)
-    					{
-							$current_id = $row["id"];
-						}
-						else
-						{
-							// Fill out everyone else in the drop box.
-//							echo "<option value=\"".$row["name"]."\">".$row["name"]."</option>";
-							echo "<input type=\"checkbox\" name=\"trans-choices[]\" value=\"".$row["id"]."\">".$row["name"];
-							echo "<br>";
+					$name_row = array();
+					if ($result->num_rows > 0) {
+	    				while($row = $result->fetch_assoc()) {
+	    					$name_row[$row["id"]] = $row["name"];
+	    					if ($row["name"] == $current_user)
+	    					{
+								$current_id = $row["id"];
+							}
+							else
+							{
+								// Fill out everyone else in the drop box.
+	//							echo "<option value=\"".$row["name"]."\">".$row["name"]."</option>";
+								echo "<input type=\"checkbox\" name=\"trans-choices[]\" value=\"".$row["id"]."\">".$row["name"];
+								echo "<br>";
+							}
 						}
 					}
-				}
-			?>
-			</div>
+				?>
+				</div>
 
 				$<input type="text" id="thingy" style="width:50px;" name="dollar_amount">
 				each for 
@@ -119,7 +119,12 @@
 				$totalUsers = array();
 
 				// lol sorry
-				$sql = "SELECT tran.*, tlist.toId, tlist.fromId, tlist.is_active FROM transaction tran INNER JOIN transaction_list tlist ON tlist.transId = tran.id INNER JOIN person p ON tlist.toId = p.id WHERE tran.is_active=1 AND tlist.is_active=1 AND (tlist.fromId=" . $current_id . " OR tlist.toId=" . $current_id . ") ORDER BY tlist.id DESC";
+				$sql = "SELECT tran.*, tlist.toId, tlist.fromId, tlist.is_active FROM transaction tran " .
+				"INNER JOIN transaction_list tlist ON tlist.transId = tran.id " .
+				"INNER JOIN person p ON tlist.toId = p.id WHERE " .
+				"tran.is_active=1 AND tlist.is_active=1 AND " .
+				"(tlist.fromId=" . $current_id . " OR tlist.toId=" . $current_id . ") " .
+				"ORDER BY tlist.id DESC";
 
 				$result = $conn->query($sql);
 
@@ -281,7 +286,7 @@
 						$other_name = $row2["name"];
     					echo "\">";
     					$phpdate = strtotime($row["timestamp"]);
-    					echo "<td id=\"trans-".$row["id"] ."\" style=\"color:black\"><a href=\"#\">" . x . "</a></td>";    						
+    					echo "<td id=\"trans-delete-".$row["id"] ."\" style=\"color:black\"><a href=\"#\">" . x . "</a></td>";    						
     					echo "<td>" . date("m/d/y", $phpdate) . "</td>";
     					echo "<td>$" . number_format($running_value,2) . "</td>";
 
@@ -303,8 +308,8 @@
 </html>
 
 <script>
-$("[id*=trans-]").click(function() {
-	var id = $(this).attr("id").split('-')[1];
+$("[id*=trans-delete-]").click(function() {
+	var id = $(this).attr("id").split('-')[2];
 	var user_id = <?php echo $current_id; ?>;
 	console.log("user_id: ");
 	console.log(user_id);
@@ -321,6 +326,12 @@ $("[id*=trans-]").click(function() {
 			alert("Failed to remove entry.");
 		});
 	}
+});
+
+$("#trans-form").submit(function(e){
+    e.preventDefault();
+    var form = this;
+    console.log("Prevented!");
 });
 
 var total_positive=<?php echo $totalPositive ?>;
