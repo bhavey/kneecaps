@@ -51,7 +51,7 @@
 							{
 								// Fill out everyone else in the drop box.
 	//							echo "<option value=\"".$row["name"]."\">".$row["name"]."</option>";
-								echo "<input type=\"checkbox\" name=\"trans-choices[]\" value=\"".$row["id"]."\">".$row["name"];
+								echo "<input type=\"checkbox\" name=\"trans-choices\" value=\"".$row["id"]."\">".$row["name"];
 								echo "<br>";
 							}
 						}
@@ -59,7 +59,7 @@
 				?>
 				</div>
 
-				$<input type="text" id="thingy" style="width:50px;" name="dollar_amount">
+				$<input type="text" id="charge_amount" style="width:50px;" name="dollar_amount">
 				each for 
 				<input type="text" name="reason" id="charge_reason">
 
@@ -330,8 +330,57 @@ $("[id*=trans-delete-]").click(function() {
 
 $("#trans-form").submit(function(e){
     e.preventDefault();
-    var form = this;
+    var form = $("#trans-form");
     console.log("Prevented!");
+    var numberTextFieldVal = $('#numberTextField').val();
+
+    console.log("up here.");
+
+    // based on https://stackoverflow.com/questions/2276463/how-can-i-get-form-data-with-javascript-jquery
+    var data = $('#trans-form').serializeArray().reduce(function(obj, item) {
+    	// Transaction choices are array, the rest are single values.
+    	if (item.name == "trans-choices")
+    	{
+    		if (obj[item.name] != undefined)
+	    	{
+			    obj[item.name].push(item.value);
+	    	}
+	    	else
+	    	{
+			    obj[item.name] = [item.value];
+	    	}
+    	}
+    	else
+    	{
+    		obj[item.name] = item.value;
+    	}
+
+    	return obj;
+	}, {});
+
+    $.post()
+
+	console.log("sending this user value:");
+	console.log(data['user_name']);
+	console.log("person value:");
+	console.log(data['person']);
+	console.log("this trans choice:");
+	console.log(data['trans-choices']);
+	result = $.post("transaction.php", {
+		transaction: data['transaction'],
+		person: data['person'],
+		dollar_amount: data['dollar_amount'],
+		reason: data['reason'],
+		from_user: data['from_user'],
+		"trans-choices[]": data['trans-choices'],
+		user_name: data['user_name']
+		})
+	.done(function() {
+		location.reload();
+	})
+	.fail(function() {
+		alert("Failed to add entry.");
+	});
 });
 
 var total_positive=<?php echo $totalPositive ?>;
